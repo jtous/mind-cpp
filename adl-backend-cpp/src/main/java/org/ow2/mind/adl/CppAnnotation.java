@@ -16,22 +16,30 @@
  *
  * Contact: mind@ow2.org
  *
- * Authors: Stephane Seyvoz
+ * Authors: Stephane Seyvoz (Assystem)
  * Contributors: 
  */
 
 package org.ow2.mind.adl;
 
-import org.ow2.mind.inject.AbstractMindModule;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-public class ADLCPPModule extends AbstractMindModule {
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-  /**
-   * TODO
-   * 
-   * @see ADLBackendModule from adl-backend
-   * @see ADLStaticBackendModule from adl-backend-static
-   * @see src/main/resources/mind-plugin.xml for plugin configuration
-   */
+import com.google.inject.BindingAnnotation;
+
+/**
+ * An annotation used to discriminate our specific Google Guice module
+ * MultiBinder from the standard one (else modules are concatenated and not
+ * replaced). See ADLCPPBackendModule comments for more details.
+ */
+@BindingAnnotation
+@Target({FIELD, PARAMETER, METHOD})
+@Retention(RUNTIME)
+public @interface CppAnnotation {
 
 }
