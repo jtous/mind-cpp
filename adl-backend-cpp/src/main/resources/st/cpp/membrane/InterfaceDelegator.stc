@@ -1,0 +1,26 @@
+template st.cpp.membrane.InterfaceDelegator
+  : st.cpp.common.ComponentHelper
+  implements st.cpp.membrane.ControllerGenerator {
+
+// TODO: change to st.cpp.interfaces instead of st.interfaces once IDL
+// backend is done
+st.interfaces.IDLDefinition idl2c = st.interfaces.IDL2C; 
+
+$${
+
+// -----------------------------------------------------------------------------
+// Implementation of the ControllerGenerator interface
+// -----------------------------------------------------------------------------
+
+ControllerImplementation(definition, controller, interfaceDefinitions) ::= <<
+// TODO
+>>
+
+// -----------------------------------------------------------------------------
+// Internal templates
+// -----------------------------------------------------------------------------
+
+// TODO
+
+}$$
+}
