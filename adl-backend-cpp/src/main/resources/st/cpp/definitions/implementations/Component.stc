@@ -1,0 +1,35 @@
+template st.cpp.definitions.implementations.Component
+  implements st.cpp.definitions.implementations.ComponentDefinition {
+
+// TODO: change to st.cpp.interfaces instead of st.interfaces once IDL
+// backend is done
+st.interfaces.IDLDefinition idl2c = st.interfaces.IDL2C ; 
+
+$${
+
+  
+isClient ::= [ "client" : "true" ]
+isServer ::= [ "server" : "true" ]
+
+// -----------------------------------------------------------------------------
+// Implementation of the ComponentDefinition interface
+// -----------------------------------------------------------------------------
+
+ComponentDefinition(definition, interfaceDefinitions) ::= <<
+/* Generated file: <definition.name;format="nameToPath">.hppinc */
+#define __COMPONENT_IN_<definition.name;format="toUpperCName">
+
+/* TODO */
+//#include "<definition.name;format="nameToPath">.adl.hpp"
+
+>>
+
+// -----------------------------------------------------------------------------
+// Internal templates
+// -----------------------------------------------------------------------------
+
+// TODO
+
+}$$
+ 
+}

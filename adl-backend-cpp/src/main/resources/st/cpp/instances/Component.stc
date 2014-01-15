@@ -1,0 +1,32 @@
+template st.cpp.instances.Component : st.cpp.common.ComponentHelper
+implements st.cpp.instances.ComponentInstances{
+
+st.cpp.membrane.ControllerGenerator ctrlGenerator = plugin(st.cpp.membrane);
+
+$${
+
+isClient ::= [ "client" : "true" ]
+isServer ::= [ "server" : "true" ]
+
+ComponentInstances(topLevelDefinition, definition, instances) ::= <<
+
+/* Generated file: <topLevelDefinition;format="nameToPath">_<definition.name;format="toCName">_instances.cpp */
+
+/* TODO */
+
+//#include "<definition.name;format="nameToPath">.hppinc"
+
+>>
+
+TopLevelInstances(topLevelDefinition, definitions, instances) ::= <<
+<ComponentInstances(topLevelDefinition=topLevelDefinition, definition=topLevelDefinition, instances=instances)>
+
+/* TODO */
+
+//void *__component_toplevel = &<first(instances).decorations.("instance-name"); format="toCName">;
+
+>>
+
+}$$
+
+}

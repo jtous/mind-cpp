@@ -1,0 +1,30 @@
+template st.cpp.definitions.header.Component: st.cpp.common.ComponentHelper
+  implements st.cpp.definitions.header.ComponentDefinitionHeader {
+
+st.cpp.membrane.ControllerGenerator ctrlGenerator = plugin(st.cpp.membrane);
+
+$${
+
+// -----------------------------------------------------------------------------
+// Implementation of the ComponentDefinitionHeader interface
+// -----------------------------------------------------------------------------
+
+ComponentDefinitionHeader(definition) ::= <<
+/* Generated file: <definition.name;format="nameToPath">.adl.hpp */
+#ifndef __COMPONENT_<definition.name;format="toUpperCName">_ADL_HPP
+#define __COMPONENT_<definition.name;format="toUpperCName">_ADL_HPP
+
+/* TODO */
+
+#endif /* __COMPONENT_<definition.name;format="toUpperCName">_ADL_HPP */
+
+>>
+
+// -----------------------------------------------------------------------------
+// Internal templates
+// -----------------------------------------------------------------------------
+
+// TODO
+
+}$$ 
+}

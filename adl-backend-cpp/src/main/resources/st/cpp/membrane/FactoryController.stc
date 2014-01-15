@@ -1,0 +1,34 @@
+template st.cpp.membrane.FactoryController
+  : st.cpp.common.ComponentHelper
+  implements st.cpp.membrane.ControllerGenerator {
+
+// TODO: change to st.cpp.interfaces instead of st.interfaces once IDL
+// backend is done
+st.interfaces.IDLDefinition idl2c = st.interfaces.IDL2C; 
+
+$${
+
+isVoid   ::= [ "void"   : "true" ]
+
+// -----------------------------------------------------------------------------
+// Implementation of the ControllerGenerator interface
+// -----------------------------------------------------------------------------
+
+ControllerImplementation(definition, controller, interfaceDefinitions) ::= <<
+
+/* -------------------------------------------------------------------------- */
+/* Implementation of the Factory interface                                    */
+/* -------------------------------------------------------------------------- */
+
+// TODO
+
+>>
+
+// -----------------------------------------------------------------------------
+// Internal templates
+// -----------------------------------------------------------------------------
+
+// TODO
+
+}$$
+}

@@ -1,0 +1,35 @@
+template st.cpp.definitions.implementations.Macro
+  : st.cpp.common.ComponentHelper
+  implements st.cpp.definitions.implementations.ComponentDefinition {
+
+// TODO: change to st.cpp.interfaces instead of st.interfaces once IDL
+// backend is done
+st.interfaces.IDLDefinition idl2c = st.interfaces.IDL2C ; 
+
+$${
+
+  
+isClient ::= [ "client" : "true" ]
+isServer ::= [ "server" : "true" ]
+isVoid   ::= [ "void"   : "true" ]
+
+// -----------------------------------------------------------------------------
+// Implementation of the ComponentDefinition interface
+// -----------------------------------------------------------------------------
+
+ComponentDefinition(definition, interfaceDefinitions) ::= <<
+/* Generated file: <definition.name;format="nameToPath">.macro */
+
+/* TODO */
+
+>>
+
+// -----------------------------------------------------------------------------
+// Internal templates
+// -----------------------------------------------------------------------------
+
+// TODO
+
+}$$
+
+}
