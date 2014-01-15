@@ -1,0 +1,13 @@
+language: java
+before_install:
+  - "git clone https://github.com/StephaneSeyvoz/mind-compiler.git"
+  - "cd mind-compiler"
+  - "mvn -U install -DskipTests -PCI-profile"
+  - "cd .."
+install:
+  - "cd adl-backend-cpp"
+  - "mvn -U clean -PCI-profile"
+  - "cd .."
+script:
+  - "cd adl-backend-cpp"
+  - "mvn -U install -PCI-profile"
