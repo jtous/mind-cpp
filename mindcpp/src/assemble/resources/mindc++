@@ -101,8 +101,8 @@ if $cygwin ; then
     MIND_LIB=`cygpath --unix "$MIND_LIB"`
   [ -n "$MIND_EXT" ] &&
     MIND_EXT=`cygpath --unix "$MIND_EXT"`
-  [ -n "$MIND_RUNTIME" ] &&
-    MIND_RUNTIME=`cygpath --unix "$MIND_RUNTIME"`
+  [ -n "$MIND_RUNTIME_CPP" ] &&
+    MIND_RUNTIME_CPP=`cygpath --unix "$MIND_RUNTIME_CPP"`
 fi
 
 # For Migwn, ensure paths are in UNIX format before anything is touched
@@ -157,8 +157,8 @@ if $cygwin; then
     MIND_LIB=`cygpath --windows "$MIND_LIB"`
   [ -n "$MIND_EXT" ] &&
     MIND_EXT=`cygpath --windows "$MIND_EXT"`
-  [ -n "$MIND_RUNTIME" ] &&
-    MIND_RUNTIME=`cygpath --windows "$MIND_RUNTIME"`
+  [ -n "$MIND_RUNTIME_CPP" ] &&
+    MIND_RUNTIME_CPP=`cygpath --windows "$MIND_RUNTIME_CPP"`
 fi
 
 
@@ -185,7 +185,7 @@ done
 
 ##########################################
 #echo MIND_LIB=$MIND_LIB
-#echo MIND_RUNTIME=$MIND_RUNTIME
+#echo MIND_RUNTIME_CPP=$MIND_RUNTIME_CPP
 #echo MIND_CLASSPATH=$MIND_CLASSPATH
 ###########################################
 

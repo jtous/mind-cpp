@@ -14,6 +14,19 @@
   		<artifactId>adl-backend-cpp</artifactId>
   		<version>2.1-SNAPSHOT</version>
   	</dependency>
+<!-- TO BE ENABLED -->
+<!-- 
+  	<dependency>
+  		<groupId>${project.groupId}</groupId>
+  		<artifactId>fractal-runtime-cpp</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>${project.groupId}</groupId>
+  		<artifactId>idl-backend-cpp</artifactId>
+  		<version>2.1-SNAPSHOT</version>
+  	</dependency>
+-->
   </dependencies> 
   
   <build>

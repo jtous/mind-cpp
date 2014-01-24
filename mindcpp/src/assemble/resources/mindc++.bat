@@ -74,7 +74,7 @@ echo.
 
 setlocal
 set MIND_CMD_LINE_ARGS=%*
-set MIND_RUNTIME=%MIND_HOME%/runtime-cpp
+set MIND_RUNTIME_CPP=%MIND_HOME%/runtime-cpp
 set MIND_LIB=%MIND_HOME%/lib
 set MIND_EXT=%MIND_HOME%/ext
 set LAUNCHER=org.ow2.mind.Launcher
