@@ -2,9 +2,7 @@ template st.cpp.definitions.implementations.Macro
   : st.cpp.common.ComponentHelper
   implements st.cpp.definitions.implementations.ComponentDefinition {
 
-// TODO: change to st.cpp.interfaces instead of st.interfaces once IDL
-// backend is done
-st.interfaces.IDLDefinition idl2c = st.interfaces.IDL2C ; 
+st.interfaces.IDLDefinition idl2c = st.cpp.interfaces.IDL2CPP ; 
 
 $${
 
@@ -28,7 +26,7 @@ ComponentDefinition(definition, interfaceDefinitions) ::= <<
 // Internal templates
 // -----------------------------------------------------------------------------
 
-// TODO
+/* TODO */
 
 }$$
 

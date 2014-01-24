@@ -1,5 +1,5 @@
 template st.cpp.interfaces.IDL2CPP
-  implements st.cpp.interfaces.IDLDefinition {
+  implements st.interfaces.IDLDefinition {
 
 $${
 /** 
