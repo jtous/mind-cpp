@@ -74,7 +74,7 @@ echo.
 
 setlocal
 set MIND_CMD_LINE_ARGS=%*
-set MIND_RUNTIME_CPP=%MIND_HOME%/runtime-cpp
+set MIND_RUNTIME=%MIND_HOME%/runtime
 set MIND_LIB=%MIND_HOME%/lib
 set MIND_EXT=%MIND_HOME%/ext
 set LAUNCHER=org.ow2.mind.Launcher
@@ -94,7 +94,7 @@ set MIND_CLASSPATH=%MIND_CLASSPATH%%VarTmp%
 goto :eof
 
 :runMind
-%MIND_JAVA_EXE% -classpath %MIND_CLASSPATH% %MIND_OPTS% -Dmindc.launcher.name=mindc %LAUNCHER% --cpp -src-path=%MIND_RUNTIME_CPP% %MIND_CMD_LINE_ARGS%
+%MIND_JAVA_EXE% -classpath %MIND_CLASSPATH% %MIND_OPTS% -Dmindc.launcher.name=mindc %LAUNCHER% --cpp -src-path=%MIND_RUNTIME% %MIND_CMD_LINE_ARGS%
 
 
 :error
