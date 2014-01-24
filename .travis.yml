@@ -5,6 +5,9 @@ before_install:
   - "mvn -U install -DskipTests -PCI-profile"
   - "cd .."
 install:
+  - "cd fractal-runtime-cpp"
+  - "mvn -U clean -PCI-profile"
+  - "cd .."
   - "cd adl-backend-cpp"
   - "mvn -U clean -PCI-profile"
   - "cd .."
@@ -15,6 +18,9 @@ install:
   - "mvn -U clean -PCI-profile"
   - "cd .."
 script:
+  - "cd fractal-runtime-cpp"
+  - "mvn -U install -PCI-profile"
+  - "cd .."
   - "cd adl-backend-cpp"
   - "mvn -U install -PCI-profile"
   - "cd .."
