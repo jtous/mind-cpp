@@ -88,7 +88,7 @@ public class ADLCPPBackendModule extends AbstractMindModule {
     setBinder.addBinding().to(CppDefinitionHeaderSourceGenerator.class);
     setBinder.addBinding().to(CppDefinitionIncSourceGenerator.class);
     setBinder.addBinding().to(CppImplementationHeaderSourceGenerator.class);
-    setBinder.addBinding().to(CppDefinitionMacroSourceGenerator.class);
+    // setBinder.addBinding().to(CppDefinitionMacroSourceGenerator.class);
     setBinder.addBinding().to(CppMembraneSourceGenerator.class);
     setBinder.addBinding().to(IDLDefinitionSourceGenerator.class);
     setBinder.addBinding().to(GenericDefinitionNameSourceGenerator.class);
@@ -107,11 +107,11 @@ public class ADLCPPBackendModule extends AbstractMindModule {
         CppDefinitionIncSourceGenerator.DEFAULT_TEMPLATE);
   }
 
-  protected void configureDefinitionMacroSourceGenerator() {
-    bind(String.class).annotatedWith(
-        Names.named(CppDefinitionMacroSourceGenerator.TEMPLATE_NAME))
-        .toInstance(CppDefinitionMacroSourceGenerator.DEFAULT_TEMPLATE);
-  }
+// protected void configureDefinitionMacroSourceGenerator() {
+// bind(String.class).annotatedWith(
+// Names.named(CppDefinitionMacroSourceGenerator.TEMPLATE_NAME))
+// .toInstance(CppDefinitionMacroSourceGenerator.DEFAULT_TEMPLATE);
+// }
 
   protected void configureMembraneSourceGenerator() {
     bind(String.class).annotatedWith(
