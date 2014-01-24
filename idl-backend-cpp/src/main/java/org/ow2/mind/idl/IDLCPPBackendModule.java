@@ -22,6 +22,7 @@
 
 package org.ow2.mind.idl;
 
+import org.ow2.mind.adl.CppAnnotation;
 import org.ow2.mind.inject.AbstractMindModule;
 
 import com.google.inject.multibindings.Multibinder;
@@ -31,10 +32,10 @@ public class IDLCPPBackendModule extends AbstractMindModule {
 
 	protected void configureIDLVisitor() {
 		bind(IDLVisitor.class).toChainStartingWith(IncludeCompiler.class)
-		.endingWith(IDLVisitorDispatcher.class);
+		.endingWith(IDLCPPVisitorDispatcher.class);
 
 		final Multibinder<IDLVisitor> setBinder = Multibinder.newSetBinder(
-				binder(), IDLVisitor.class);
+				binder(), IDLVisitor.class, CppAnnotation.class);
 		setBinder.addBinding().to(IDLCPPHeaderCompiler.class);
 		setBinder.addBinding().to(BinaryIDLWriter.class);
 	}
