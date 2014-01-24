@@ -8,6 +8,12 @@ install:
   - "cd adl-backend-cpp"
   - "mvn -U clean -PCI-profile"
   - "cd .."
+  - "cd mindcpp"
+  - "mvn -U clean -PCI-profile"
+  - "cd .."
 script:
   - "cd adl-backend-cpp"
   - "mvn -U install -PCI-profile"
+  - "cd .."
+  - "cd mindcpp"
+  - "mvn -U verify -PCI-profile"
