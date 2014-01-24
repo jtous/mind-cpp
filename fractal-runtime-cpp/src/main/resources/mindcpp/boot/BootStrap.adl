@@ -41,7 +41,7 @@ import fractal.api.LifeCycleController;
  * interfaces from the main C function.
  */
 @Singleton
-primitive mindcpp.boot.Bootstrap {
+primitive mindcpp.boot.BootStrap {
 
   requires Main as entryPoint;
   //requires optional LifeCycleController as appLCC;
