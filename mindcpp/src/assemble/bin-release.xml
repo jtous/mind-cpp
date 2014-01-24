@@ -12,10 +12,7 @@
             <outputDirectory>ext</outputDirectory>
             <includes>
                 <include>${project.groupId}:adl-backend-cpp</include>
-<!-- TO BE ENABLED -->
-<!-- 
                 <include>${project.groupId}:idl-backend-cpp</include>
- -->
             </includes>
             <fileMode>0644</fileMode>
         </dependencySet>
