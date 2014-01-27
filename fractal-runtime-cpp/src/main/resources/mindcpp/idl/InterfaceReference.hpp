@@ -46,9 +46,8 @@ public:
 	AnInterfaceDescriptor* reference;
 
 public:
-	inline InterfaceReference(){
-		reference = 0; // FIXME check with NMF's CPP.HPP InterfaceReference constructor.
-	};
+	InterfaceReference(InterfaceDescriptor* _reference = 0):
+		reference(_reference) {}
 
 	/**
 	 * \brief Test if an interface reference is really bound.

@@ -13,14 +13,14 @@ idlFile(idl) ::= <<
 /* This file is a generated file, do not edit. */
 
 #include "mindcommon.hpp"
-#include "InterfaceDescriptor.hpp"
-#include "InterfaceReference.hpp"
+#include "mindcpp/idl/InterfaceDescriptor.hpp"
+#include "mindcpp/idl/InterfaceReference.hpp"
 
 <idl.includes:includeDirective(include=it); separator="\n">
 <idl.astDecorations.("referenced-interfaces").referencedInterfaces:includeReference(ref=it.IDL); separator="\n">
 
 <if (idl.astNodeTypes.("method"))>
-// FIXME handle va_args like in C ? (see below)
+<! FIXME handle va_args like in C ? (see below) !>
 <idl.methods:{<if (it.vaArgs)>#include \<stdarg.h> <endif>};separator="\n">
 <endif>
 
@@ -100,14 +100,14 @@ interfaceDescriptorDef(itf) ::= <<
 class <itf.name; format="toCName">Descriptor: public Mind::InterfaceDescriptor {
 public:
   inline <itf.name; format="toCName">Descriptor(){};
-  virtual inline <itf.name; format="toCName">Descriptor(){};
+  virtual inline ~<itf.name; format="toCName">Descriptor(){};
 
   <itf.methods:{virtual <methodDef(method=it, methodName=it.name, withThisPtr="false")> = 0;}; separator="\n">
 };
 >>
 
 interfaceReferenceDef(itf) ::= <<
-class "<itf.name; format="toCName">Reference": public Mind::InterfaceReference\<<itf.name; format="toCName">Descriptor\>, public <itf.name; format="toCName">Descriptor {
+class <itf.name; format="toCName">Reference: public Mind::InterfaceReference\<<itf.name; format="toCName">Descriptor\>, public <itf.name; format="toCName">Descriptor {
 public:
   /* Concrete implementation of the <itf.name; format="toCName"> ITF methods */
   <itf.methods:{<methodCallThroughReference(method=it)>}; separator="\n">
@@ -115,9 +115,9 @@ public:
 >>
 
 methodCallThroughReference(method) ::= <<
-  inline <methodDef(method=method, methodName=method.name, withThisPtr="false")> {
-    return reference-><method.name>(<method.parameters:{<it.name>};separator=", ">);
-  }
+inline <methodDef(method=method, methodName=method.name, withThisPtr="false")> {
+  return reference-><method.name>(<method.parameters:{<it.name>};separator=", ">);
+}
 >>
 
 //--------------------------------------------------------------------------------
