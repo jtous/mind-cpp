@@ -7,17 +7,20 @@ $${
  * defined in the given idl tree.
  */
 idlFile(idl) ::= <<
-#ifndef <idl.name;format="pathToUpperCName">_H
-#define <idl.name;format="pathToUpperCName">_H
+#ifndef _<idl.name;format="pathToUpperCName">_HPP_
+#define _<idl.name;format="pathToUpperCName">_HPP_
 
 /* This file is a generated file, do not edit. */
 
 #include "mindcommon.hpp"
+#include "mindcpp/idl/InterfaceDescriptor.hpp"
+#include "mindcpp/idl/InterfaceReference.hpp"
 
 <idl.includes:includeDirective(include=it); separator="\n">
 <idl.astDecorations.("referenced-interfaces").referencedInterfaces:includeReference(ref=it.IDL); separator="\n">
 
 <if (idl.astNodeTypes.("method"))>
+<! FIXME handle va_args like in C ? (see below) !>
 <idl.methods:{<if (it.vaArgs)>#include \<stdarg.h> <endif>};separator="\n">
 <endif>
 
@@ -25,7 +28,7 @@ idlFile(idl) ::= <<
 
 <(defTemplateMap.(idl.astDecorations.kind))(idl)>
 
-#endif /* <idl.name;format="pathToUpperCName">_H */
+#endif /* _<idl.name;format="pathToUpperCName">_HPP_ */
 
 >>
 
@@ -80,68 +83,49 @@ enumMemberDef(member) ::= "<member.name><if (member.constantExpression)> = <expr
 
 constDef(const) ::= "#define <const.name> <const.value>"
 
+//--------------------------------------------------------------------------------
+// The interface main entry
+
+
 interfaceDef(itf) ::= <<
-<interfaceVTableDef(itf)>
+<interfaceDescriptorDef(itf)>
 
-<interfaceTypeDef(itf)>
+<interfaceReferenceDef(itf)>
+>>
 
-#ifndef __COMPONENT_IS_BOUND_DEFINED
-#define __COMPONENT_IS_BOUND_DEFINED
+//--------------------------------------------------------------------------------
+// New templates
 
-struct __component_generic_itf_desc {
-  void *selfData;
-  void *meth;
-  void *isBound;
+interfaceDescriptorDef(itf) ::= <<
+class <itf.name; format="toCName">Descriptor: public Mind::InterfaceDescriptor {
+public:
+  inline <itf.name; format="toCName">Descriptor(){};
+  virtual inline ~<itf.name; format="toCName">Descriptor(){};
+
+  <itf.methods:{virtual <methodDef(method=it, methodName=it.name, withThisPtr="false")> = 0;}; separator="\n">
 };
+>>
 
-__MIND_ATTRIBUTE_UNUSED
-static __MIND_INLINE int __component_is_bound(void *itfPtr) {
-  if (itfPtr == NULL) {
-    return 0;
-  }
-  while (((struct __component_generic_itf_desc *) itfPtr)->isBound != NULL
-     && ((struct __component_generic_itf_desc *) itfPtr)->isBound 
-        != ((struct __component_generic_itf_desc *) itfPtr)->selfData) {
-    itfPtr = ((struct __component_generic_itf_desc *) itfPtr)->isBound;
-  }
-  if (((struct __component_generic_itf_desc *) itfPtr)->isBound == NULL) {
-    return 0;
-  } else {
-    return 1;
-  }
+interfaceReferenceDef(itf) ::= <<
+class <itf.name; format="toCName">Reference: public Mind::InterfaceReference\<<itf.name; format="toCName">Descriptor\>, public <itf.name; format="toCName">Descriptor {
+public:
+  /* Concrete implementation of the <itf.name; format="toCName"> ITF methods */
+  <itf.methods:{<methodCallThroughReference(method=it)>}; separator="\n">
+};
+>>
+
+methodCallThroughReference(method) ::= <<
+inline <methodDef(method=method, methodName=method.name, withThisPtr="false")> {
+  return reference-><method.name>(<method.parameters:{<it.name>};separator=", ">);
 }
-
-#endif
-
 >>
 
-interfaceVTableDef(itf) ::= <<
-struct __component_<itf.name; format="toCName">_vTable {
-  <itf.methods:{<methodPointerDef(method=it, withThisPtr="true")>;}; separator="\n">
-};
->>
-
-interfaceTypeDef(itf) ::= <<
-struct __component_<itf.name; format="toCName">_itf_desc {
-  void *selfData;
-  struct __component_<itf.name; format="toCName">_vTable *meths;
-  void *isBound;
-};
-typedef struct __component_<itf.name; format="toCName">_itf_desc *<itf.name; format="toCName">;
->>
+//--------------------------------------------------------------------------------
+// Below is old stuff
 
 methodDef(method, methodName, withThisPtr) ::= <<
 <typeQualifier(qualifiers=method)><varDef(type=method.type, name=methodPrototype(name=methodName, parameters=method.parameters, withThisPtr=withThisPtr, vaArgs=method.vaArgs))>
 >>
-
-methodPointerCast(method, withThisPtr) ::= <<
-(<varDef(type=method.type, name=methodPrototype(name="(*)", parameters=method.parameters, withThisPtr=withThisPtr, vaArgs=method.vaArgs))>)
->>
-
-
-methodPointerDef(method, withThisPtr) ::= "<methodDef(method=method, methodName=methodPointerName(name=method.name), withThisPtr=withThisPtr)> "
-
-methodPointerName(name) ::= "(* <name>)"
 
 thisPointerDef ::= [
   "true" : "void *_mind_this",
