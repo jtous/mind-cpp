@@ -14,7 +14,20 @@ ComponentDefinitionHeader(definition) ::= <<
 #ifndef __COMPONENT_<definition.name;format="toUpperCName">_ADL_HPP
 #define __COMPONENT_<definition.name;format="toUpperCName">_ADL_HPP
 
-/* TODO */
+#include "mindcommon.hpp"
+
+/* Start including the interface descriptions */
+<definition.interfaces:{#include "<it.signature; format="nameToPath">.itf.hpp"}; separator="\n">
+<UsedInterfaceDefinitions(definition=definition)>
+/* End including the interface descriptions */
+
+/* Start definition of interface instances classes */
+<InterfaceInstancesClassDef(definition=definition)>
+/* End definition of interface instances classes */
+
+/* Start definition of component type */
+<DefinitionClassDef(definition=definition)>
+/* End  definition of component type */
 
 #endif /* __COMPONENT_<definition.name;format="toUpperCName">_ADL_HPP */
 
@@ -24,7 +37,247 @@ ComponentDefinitionHeader(definition) ::= <<
 // Internal templates
 // -----------------------------------------------------------------------------
 
-// TODO
+// -----------------------------------------------------------------------------
+// Component typedef
+
+DefinitionClassDef(definition) ::= <<
+class <definition.name;format="toCName">Definition <ProvidedInterfacesInheritance(definition=definition)> {
+// constructor and destructor
+public:
+  inline <definition.name;format="toCName">Definition(){};
+  inline ~<definition.name;format="toCName">Definition(){};
+<if (definition.astDecorations.("clientItfInstances"))>
+
+// client interface references 
+public:
+  <definition.astDecorations.("clientItfInstances"):{<InterfaceReferencesDecl(itf=it)>}; separator="\n"> <! DeclareClientReferences will filter server interfaces !>
+<endif>
+
+};
+>>
+
+// -----------------------------------------------------------------------------
+// Provided interface instances classes definition
+
+ProvidedInterfacesInheritance(definition) ::= <<
+<if (definition.astDecorations.("serverItfInstances"))>: <definition.astDecorations.("serverItfInstances"):{<ProvidedInterfaceInheritance(itf=it)>}; separator=", "><endif>
+>>
+
+ProvidedInterfaceInheritance(itf) ::= <<
+public <it.name; format="toCName"><endif>
+>>
+
+InterfaceInstancesClassDef(definition) ::= <<
+<definition.interfaces:{<InterfaceInstanceClassDef(itf=it)>}; separator="\n">
+>>
+
+InterfaceInstanceClassDef(itf) ::= <<
+<if (isServer.(itf.role))>
+class <itf.name; format="toCName"> : public <itf.signature; format="toCName">Descriptor {
+// constructor and destructor
+public:
+  inline <itf.name; format="toCName">(){};
+  inline ~<itf.name; format="toCName">(){};
+
+// prototypes
+<methodsVirtualPrototypes(itfDef=itf.astDecorations.("interfaceDefinition"))>
+};
+<endif>  
+>>
+
+methodsVirtualPrototypes(itfDef) ::= <<
+<if (itfDef.methods)>
+public:
+  <itfDef.methods:{virtual <methodDef(method=it, methodName=it.name, withThisPtr="false")>;}; separator="\n">
+<endif>
+>>
+
+// -----------------------------------------------------------------------------
+// References generation
+
+InterfaceReferencesDecl(itf) ::= <<
+<itf.signature; format="toCName">Reference <itf.name; format="toCName">;
+>>
+
+// -----------------------------------------------------------------------------
+// Used interface definitions
+
+UsedInterfaceDefinitions(definition) ::= <<
+<definition.astDecorations.("used-interface-definition").values:UsedInterfaceDefinition(usedItfName=it.interfaceName); separator="\n">
+>>
+
+UsedInterfaceDefinition(usedItfName) ::= <<
+#include "<usedItfName; format="nameToPath">.itf.hpp"
+>>
+
+// -----------------------------------------------------------------------------
+// Copied brutally from IDL2C/IDL2CPP since we need to redefine method prototypes in methodsVirtualPrototypes template
+
+methodDef(method, methodName, withThisPtr) ::= <<
+<typeQualifier(qualifiers=method)><varDef(type=method.type, name=methodPrototype(name=methodName, parameters=method.parameters, withThisPtr=withThisPtr, vaArgs=method.vaArgs))>
+>>
+
+thisPointerDef ::= [
+  "true" : "void *_mind_this",
+  "typed" : "CONTEXT_PTR_DECL",
+  "false" : ""
+]
+
+thisPointerComma ::= [
+  "true" : ",",
+  "typed" : ",",
+  "false" : ""
+]
+
+noParamVoid ::= [
+  "true" : "",
+  "typed" : "",
+  "false" : "void"
+]
+
+vaArgsMap ::= [
+   "true" : "true",
+   default :
+]
+
+methodPrototype(name, parameters, withThisPtr, vaArgs) ::= <<
+<name>(<thisPointerDef.(withThisPtr)> <if(parameters)>
+<thisPointerComma.(withThisPtr)> <parameters:parameterDef(parameter=it); separator=", "> <if (vaArgs)>, ...<endif>
+<else> 
+<if (vaArgs)> <thisPointerComma.(withThisPtr)> ...
+<else>
+<noParamVoid.(withThisPtr)> 
+<endif>
+<endif>)
+>>
+
+parameterDef(parameter) ::= <<
+<typeQualifier(qualifiers=parameter)><varDef(type=parameter.type, name=parameterName(parameter=parameter))>
+>>
+
+parameterName(parameter) ::= <<
+<if (parameter.isOut)>
+<outParameterTemplateMap.(parameter.isOut)>
+<else>
+<outParameterTemplateMap.false>
+<endif>
+>>
+
+outParameterTemplateMap ::= [
+  "true"  : "(*<parameter.name>)",
+  "false" : "<parameter.name>",
+  default : "<parameter.name>"
+]
+
+enumRefDef(type) ::= "enum <type.name>"
+
+varDef(type, name) ::= <<
+<(varDefTemplateMap.(type.astDecorations.kind))(type=type, name=name)>
+>>
+
+enumVarDef(type, name) ::= "<enumDef(type=type)> <name>"
+
+enumRefVarDef(type, name) ::= "<enumRefDef(type=type)> <name>"
+
+structVarDef(type, name) ::= "<structDef(type=type)> <name>"
+
+structRefVarDef(type, name) ::= "<structRefDef(type=type)> <name>"
+
+unionVarDef(type, name) ::= "<unionDef(type=type)> <name>"
+
+unionRefVarDef(type, name) ::= "<unionRefDef(type=type)> <name>"
+
+pointerOfVarDef(type, name) ::= "<varDef(type=type.type, name=pointerOfVarName(type=type, name=name))>"
+
+pointerOfVarName(type, name) ::= "(* <typeQualifier(qualifiers=type)><name>)"
+
+arrayOfVarDef(type, name) ::= "<varDef(type=type.type, name=arrayOfVarName(type=type, name=name))>"
+
+arrayOfVarName(type, name) ::= "<name>[<if (type.constantExpression)><expression(expr=type.constantExpression)><endif>]"
+
+simpleVarDef(type, name) ::= <<
+<if (primitiveTypeNameMap.(type.name))>
+<primitiveTypeNameMap.(type.name)> <name>
+<else>
+<type.name> <name>
+<endif>
+>>
+
+typedefVarDef(type, name) ::= <<
+<type.name; format="toCName"> <name>
+>>
+
+varDefTemplateMap ::= [
+  "enum" :          "enumVarDef",
+  "enumRef" :       "enumRefVarDef",
+  "struct" :        "structVarDef",
+  "structRef" :     "structRefVarDef",
+  "union" :         "unionVarDef",
+  "unionRef" :      "unionRefVarDef",
+  "pointerOf" :     "pointerOfVarDef",
+  "arrayOf" :       "arrayOfVarDef",
+  "primitiveType" : "simpleVarDef",
+  "typedefRef" :    "typedefVarDef"
+]
+
+primitiveTypeNameMap ::= [
+  "string" : "__MIND_STRING_TYPEDEF"
+]
+
+expression(expr) ::= <<
+<(constantExpressionTemplateMap.(expr.astDecorations.kind))(expr=expr)>
+>>
+
+binaryOpertaionExpr(expr) ::= <<
+<expr.constantExpressions:{(<expression(expr=it)>)};separator=expr.operation>
+>>
+
+unaryOperationExpr(expr) ::= <<
+<expr.operation> (<expression(expr=expr.constantExpression)>)
+>>
+
+castOperationExpr(expr) ::= <<
+((<varDef(type=expr.type, name="")>) <expression(expr=expr.constantExpression)>)
+>>
+
+literalExpr(expr) ::= <<
+<expr.expr>
+>>
+
+constantExpressionTemplateMap ::= [
+  "binaryOperation" : "binaryOpertaionExpr",
+  "unaryOperation" :  "unaryOperationExpr",
+  "castOperation" :   "castOperationExpr",
+  "literal" :         "literalExpr"
+]
+
+typeQualifier(qualifiers) ::= <<
+<constQualiferMap.(qualifiers.isConst)><volatileQualifierMap.(qualifiers.isVolatile)>
+>>
+
+constQualiferMap ::= [
+  "true" : "const ",
+  "false": ""
+]
+
+volatileQualifierMap ::= [
+  "true" : "volatile ",
+  "false": ""
+]
+
+isVoidMethod(method) ::= "<(voidTypeTemplateMap.(method.type.astDecorations.kind))(type=method.type)>"
+
+voidPrimitiveType(type) ::= "<isVoidMap.(type.name)>"
+
+voidComplexType(type) ::= "<isComplexTypeVoidMap.(type)>"
+
+voidTypeTemplateMap ::= [
+  "primitiveType" : "voidPrimitiveType",
+  default         : "voidComplexType"
+]
+
+isVoidMap ::= [ "void" : "true" ]
+isComplexTypeVoidMap ::= [ default : ]
 
 }$$ 
 }

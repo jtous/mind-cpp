@@ -22,10 +22,8 @@
 
 package org.ow2.mind.adl;
 
-import org.ow2.mind.adl.generic.GenericDefinitionNameSourceGenerator;
 import org.ow2.mind.adl.idl.IDLDefinitionSourceGenerator;
 import org.ow2.mind.adl.interfaces.CollectionInterfaceDefinitionSourceGenerator;
-import org.ow2.mind.adl.membrane.CppMembraneSourceGenerator;
 import org.ow2.mind.inject.AbstractMindModule;
 
 import com.google.inject.Binder;
@@ -86,12 +84,12 @@ public class ADLCPPBackendModule extends AbstractMindModule {
     final Multibinder<DefinitionSourceGenerator> setBinder = ADLCPPBackendModule
         .getDefinitionSourceGeneratorMultiBinder(binder());
     setBinder.addBinding().to(CppDefinitionHeaderSourceGenerator.class);
-    setBinder.addBinding().to(CppDefinitionIncSourceGenerator.class);
-    setBinder.addBinding().to(CppImplementationHeaderSourceGenerator.class);
-    // setBinder.addBinding().to(CppDefinitionMacroSourceGenerator.class);
-    setBinder.addBinding().to(CppMembraneSourceGenerator.class);
+// setBinder.addBinding().to(CppDefinitionIncSourceGenerator.class);
+// setBinder.addBinding().to(CppImplementationHeaderSourceGenerator.class);
+// setBinder.addBinding().to(CppDefinitionMacroSourceGenerator.class);
+// setBinder.addBinding().to(CppMembraneSourceGenerator.class);
     setBinder.addBinding().to(IDLDefinitionSourceGenerator.class);
-    setBinder.addBinding().to(GenericDefinitionNameSourceGenerator.class);
+// setBinder.addBinding().to(GenericDefinitionNameSourceGenerator.class);
     setBinder.addBinding().to(BinaryADLWriter.class);
   }
 
@@ -101,11 +99,11 @@ public class ADLCPPBackendModule extends AbstractMindModule {
         .toInstance(CppDefinitionHeaderSourceGenerator.DEFAULT_TEMPLATE);
   }
 
-  protected void configureDefinitionIncSourceGenerator() {
-    bind(String.class).annotatedWith(
-        Names.named(CppDefinitionIncSourceGenerator.TEMPLATE_NAME)).toInstance(
-        CppDefinitionIncSourceGenerator.DEFAULT_TEMPLATE);
-  }
+// protected void configureDefinitionIncSourceGenerator() {
+// bind(String.class).annotatedWith(
+// Names.named(CppDefinitionIncSourceGenerator.TEMPLATE_NAME)).toInstance(
+// CppDefinitionIncSourceGenerator.DEFAULT_TEMPLATE);
+// }
 
 // protected void configureDefinitionMacroSourceGenerator() {
 // bind(String.class).annotatedWith(
@@ -113,11 +111,11 @@ public class ADLCPPBackendModule extends AbstractMindModule {
 // .toInstance(CppDefinitionMacroSourceGenerator.DEFAULT_TEMPLATE);
 // }
 
-  protected void configureMembraneSourceGenerator() {
-    bind(String.class).annotatedWith(
-        Names.named(CppMembraneSourceGenerator.TEMPLATE_NAME)).toInstance(
-        CppMembraneSourceGenerator.DEFAULT_TEMPLATE);
-  }
+// protected void configureMembraneSourceGenerator() {
+// bind(String.class).annotatedWith(
+// Names.named(CppMembraneSourceGenerator.TEMPLATE_NAME)).toInstance(
+// CppMembraneSourceGenerator.DEFAULT_TEMPLATE);
+// }
 
   /**
    * Returns the {@link Multibinder} that can be used to add
