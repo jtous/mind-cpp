@@ -16,18 +16,45 @@ ComponentDefinitionHeader(definition) ::= <<
 
 #include "mindcommon.hpp"
 
+<if (definition.interfaces)>
 /* Start including the interface descriptions */
 <definition.interfaces:{#include "<it.signature; format="nameToPath">.itf.hpp"}; separator="\n">
 <UsedInterfaceDefinitions(definition=definition)>
 /* End including the interface descriptions */
 
+<endif>
+
+<if (definition.astNodeTypes.("component"))>
+/* Start including the sub-component descriptions */
+<definition.components:{#include "<it.definitionReference.name;format="nameToPath">.adl.hpp"}; separator="\n">
+/* End including the sub-component descriptions */
+
+<endif>
+
+<if (definition.astNodeTypes.("component"))>
+/* Start declaring used namespaces */
+<definition.components:{using namespace __ns_<it.definitionReference.name;format="toCName">;}; separator="\n">
+/* End declaring used namespaces */
+
+<endif>
+
+
+namespace __ns_<definition.name;format="toCName"> {
+
+<if (definition.interfaces)>
+<if (definition.astDecorations.("serverItfInstances"))>
 /* Start definition of interface instances classes */
 <InterfaceInstancesClassDef(definition=definition)>
 /* End definition of interface instances classes */
+<endif>
+<endif>
+
 
 /* Start definition of component type */
 <DefinitionClassDef(definition=definition)>
 /* End  definition of component type */
+
+};
 
 #endif /* __COMPONENT_<definition.name;format="toUpperCName">_ADL_HPP */
 
@@ -42,17 +69,29 @@ ComponentDefinitionHeader(definition) ::= <<
 
 DefinitionClassDef(definition) ::= <<
 class <definition.name;format="toCName">Definition <ProvidedInterfacesInheritance(definition=definition)> {
-// constructor and destructor
+<if (!(definition.astNodeTypes.("component")))> <! constructor and destructor for primitives !>
 public:
+  // constructor and destructor
   inline <definition.name;format="toCName">Definition(){};
   inline ~<definition.name;format="toCName">Definition(){};
+<endif>
 <if (definition.astDecorations.("clientItfInstances"))>
 
-// client interface references 
 public:
+  // client interface references 
   <definition.astDecorations.("clientItfInstances"):{<InterfaceReferencesDecl(itf=it)>}; separator="\n"> <! DeclareClientReferences will filter server interfaces !>
 <endif>
 
+<if (definition.astNodeTypes.("component"))>
+public:
+  // sub-components
+  <SubComponentsDecl(definition=definition)>
+
+public:
+  // bindings initialization between sub-components
+  <ContructorDeclInitBindings(definition=definition)>
+
+<endif>
 };
 >>
 
@@ -97,6 +136,36 @@ public:
 
 InterfaceReferencesDecl(itf) ::= <<
 <itf.signature; format="toCName">Reference <itf.name; format="toCName">;
+>>
+
+
+// -----------------------------------------------------------------------------
+// Sub-components & internal bindings
+
+SubComponentsDecl(definition) ::= <<
+<if (definition.components)>
+<definition.components:ComponentFieldDecl(component=it); separator="\n">
+<endif>
+>>
+
+ComponentFieldDecl(component) ::= <<
+<component.definitionReference.name; format="toCName">Definition <component.name; format="toCName">;
+>>
+
+ContructorDeclInitBindings(definition) ::= <<
+<definition.name;format="toCName">Definition(){
+  <if (definition.astNodeTypes.("binding"))>
+    <if (definition.bindings)>
+  <definition.bindings:{<DeclareBindingDefaultInit(binding=it)>}; separator="\n">
+    <endif>
+  <endif>
+}
+
+~<definition.name;format="toCName">Definition(){};
+>>
+
+DeclareBindingDefaultInit(binding) ::= <<
+<binding.fromComponent>.<binding.fromInterface>.reference=&<binding.toComponent>;
 >>
 
 // -----------------------------------------------------------------------------
