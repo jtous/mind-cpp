@@ -46,8 +46,9 @@ public:
 	AnInterfaceDescriptor* reference;
 
 public:
-	InterfaceReference(InterfaceDescriptor* _reference = 0):
-		reference(_reference) {}
+	inline InterfaceReference(){
+		reference = 0; //FIXME set a reference to 0 ?
+	};
 
 	/**
 	 * \brief Test if an interface reference is really bound.
