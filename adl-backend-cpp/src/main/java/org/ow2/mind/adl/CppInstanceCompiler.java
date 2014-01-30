@@ -22,13 +22,19 @@
 
 package org.ow2.mind.adl;
 
+import static org.ow2.mind.PathHelper.replaceExtension;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.objectweb.fractal.adl.ADLException;
+import org.objectweb.fractal.adl.CompilerError;
+import org.objectweb.fractal.adl.error.GenericErrors;
 import org.ow2.mind.compilation.CompilationCommand;
+import org.ow2.mind.compilation.CompilerCommand;
 
 public class CppInstanceCompiler extends BasicInstanceCompiler {
 
@@ -44,11 +50,32 @@ public class CppInstanceCompiler extends BasicInstanceCompiler {
       final InstancesDescriptor instanceDesc, final Map<Object, Object> context)
       throws ADLException {
 
-    // TODO
+    instanceSourceGeneratorItf.visit(instanceDesc, context);
+    final String instancesFileName = CppInstanceSourceGenerator
+        .getInstancesFileName(instanceDesc);
+
+    // localize file _instances.cpp
+    final File srcFile = outputFileLocatorItf.getCSourceOutputFile(
+        instancesFileName, context);
+    if (!srcFile.exists()) {
+      throw new CompilerError(GenericErrors.INTERNAL_ERROR,
+          "Can't find source file \"" + instancesFileName + "\"");
+    }
+
+    // Removed ImplementationHeaderSourceGenerator handling
+    // TODO: check if it's necessary to reintroduce it ?
+
+    final File objectFile = outputFileLocatorItf.getCCompiledOutputFile(
+        replaceExtension(instancesFileName, ".o"), context);
+
+    final CompilerCommand gccCommand = compilationCommandFactory
+        .newCompilerCommand(instanceDesc.instanceDefinition, null, srcFile,
+            true, null, null, objectFile, context);
+
+    gccCommand.setAllDependenciesManaged(true);
 
     final List<CompilationCommand> compilationTasks = new ArrayList<CompilationCommand>();
-
-    // TODO
+    compilationTasks.add(gccCommand);
 
     return compilationTasks;
   }
