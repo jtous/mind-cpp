@@ -22,16 +22,19 @@
  * Authors: Julien Tous
  */
 
+#include "mindcpp/boot/BootStrap.adl.hpp"
+
+using namespace __ns_mindcpp_boot_BootStrap;
 
 //from c code possible for singletons only
 //Might find a better way ???
-extern BootstrapDefinition& mindcpp_boot_BootstrapSingleton;
+extern mindcpp_boot_BootStrapDefinition& mindcpp_boot_BootStrapSingleton;
 
 int main(int argc, char *argv[]) {
 	int r;
 
 	// call the "main" entry point of the application
-	r = mindcpp_boot_BootstrapSingleton.entryPoint.main(argc, argv);
+	r = mindcpp_boot_BootStrapSingleton.entryPoint.main(argc, argv);
 
 	return r;
 }
