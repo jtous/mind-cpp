@@ -41,6 +41,11 @@ ComponentDefinitionHeader(definition) ::= <<
 
 namespace __ns_<definition.name;format="toCName"> {
 
+/* Start internal data definition: private component data + client interfaces references */
+<InternalDataDecl(definition=definition)>
+/* Stop internal data definition: private component data + client interfaces references */
+
+
 <if (definition.interfaces)>
 <if (definition.astDecorations.("serverItfInstances"))>
 /* Start definition of interface instances classes */
@@ -68,18 +73,12 @@ namespace __ns_<definition.name;format="toCName"> {
 // Component typedef
 
 DefinitionClassDef(definition) ::= <<
-class <definition.name;format="toCName">Definition <ProvidedInterfacesInheritance(definition=definition)> {
+class <definition.name;format="toCName">Definition <FullInheritanceDecl(definition=definition)> {
 <if (!(definition.astNodeTypes.("component")))> <! constructor and destructor for primitives !>
 public:
   // constructor and destructor
   inline <definition.name;format="toCName">Definition(){};
   inline ~<definition.name;format="toCName">Definition(){};
-<endif>
-<if (definition.astDecorations.("clientItfInstances"))>
-
-public:
-  // client interface references 
-  <definition.astDecorations.("clientItfInstances"):{<InterfaceReferencesDecl(itf=it)>}; separator="\n"> <! DeclareClientReferences will filter server interfaces !>
 <endif>
 
 <if (definition.astNodeTypes.("component"))>
@@ -95,11 +94,35 @@ public:
 };
 >>
 
+//  -----------------------------------------------------------------------------
+// Full inheritance
+
+FullInheritanceDecl(definition) ::= <<
+: <ProvidedInterfacesInheritance(definition=definition)> virtual public internal_data
+>>
+
+// -----------------------------------------------------------------------------
+// Internal data (private data + client interfaces references)
+
+InternalDataDecl(definition) ::= <<
+class internal_data {
+public:
+  inline internal_data(){};
+  virtual inline ~internal_data(){};
+<if (definition.astDecorations.("clientItfInstances"))>
+
+  // client interface references 
+  <definition.astDecorations.("clientItfInstances"):{<InterfaceReferencesDecl(itf=it)>}; separator="\n"> <! DeclareClientReferences will filter server interfaces !>
+<endif>
+
+};
+>>
+
 // -----------------------------------------------------------------------------
 // Provided interface instances classes definition
 
 ProvidedInterfacesInheritance(definition) ::= <<
-<if (definition.astDecorations.("serverItfInstances"))>: <definition.astDecorations.("serverItfInstances"):{<ProvidedInterfaceInheritance(itf=it)>}; separator=", "><endif>
+<if (definition.astDecorations.("serverItfInstances"))><definition.astDecorations.("serverItfInstances"):{<ProvidedInterfaceInheritance(itf=it)>}; separator=", ">,<endif>
 >>
 
 ProvidedInterfaceInheritance(itf) ::= <<
@@ -112,7 +135,7 @@ InterfaceInstancesClassDef(definition) ::= <<
 
 InterfaceInstanceClassDef(itf) ::= <<
 <if (isServer.(itf.role))>
-class <itf.name; format="toCName"> : public <itf.signature; format="toCName">Descriptor {
+class <itf.name; format="toCName"> : public virtual <itf.signature; format="toCName">Descriptor, virtual public internal_data {
 // constructor and destructor
 public:
   inline <itf.name; format="toCName">(){};
