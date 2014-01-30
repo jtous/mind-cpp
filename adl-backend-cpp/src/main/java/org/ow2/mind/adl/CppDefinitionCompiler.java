@@ -22,14 +22,27 @@
 
 package org.ow2.mind.adl;
 
+import static org.ow2.mind.PathHelper.fullyQualifiedNameToPath;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Map;
 
 import org.objectweb.fractal.adl.ADLException;
+import org.objectweb.fractal.adl.CompilerError;
 import org.objectweb.fractal.adl.Definition;
+import org.objectweb.fractal.adl.error.GenericErrors;
+import org.ow2.mind.SourceFileWriter;
 import org.ow2.mind.adl.CompilationDecorationHelper.AdditionalCompilationUnitDecoration;
 import org.ow2.mind.adl.ast.ImplementationContainer;
+import org.ow2.mind.adl.ast.Source;
 import org.ow2.mind.compilation.CompilationCommand;
+import org.ow2.mind.compilation.CompilerCommand;
+import org.ow2.mind.io.IOErrors;
+import org.ow2.mind.st.BackendFormatRenderer;
 
 public class CppDefinitionCompiler extends BasicDefinitionCompiler {
 
@@ -57,7 +70,54 @@ public class CppDefinitionCompiler extends BasicDefinitionCompiler {
       final Collection<CompilationCommand> compilationTasks,
       final Map<Object, Object> context) throws ADLException {
 
-    // TODO
+    // We deal with the user .cpp sources (adl source keyword list)
+    final Source[] sources = container.getSources();
+    for (int i = 0; i < sources.length; i++) {
+
+      final Source src = sources[i];
+      final String implSuffix = "_impl" + i;
+
+      final File objectFile = outputFileLocatorItf.getCCompiledOutputFile(
+          fullyQualifiedNameToPath(definition.getName(), implSuffix, ".o"),
+          context);
+
+      // handle source differently whether it's ADL inline or a normal reference
+      final File srcFile;
+      String inlinedCCode = src.getCCode();
+      if (inlinedCCode != null) {
+        // Implementation code is inlined in the ADL. Dump it in a file.
+        srcFile = outputFileLocatorItf.getCSourceOutputFile(
+            fullyQualifiedNameToPath(definition.getName(), implSuffix, ".cpp"),
+            context);
+        inlinedCCode = BackendFormatRenderer.sourceToLine(src) + "\n"
+            + inlinedCCode + "\n";
+        try {
+          SourceFileWriter.writeToFile(srcFile, inlinedCCode);
+        } catch (final IOException e) {
+          throw new CompilerError(IOErrors.WRITE_ERROR, e,
+              srcFile.getAbsolutePath());
+        }
+      } else {
+        // usual user .cpp file
+        assert src.getPath() != null;
+        final URL srcURL = implementationLocatorItf.findSource(src.getPath(),
+            context);
+        try {
+          srcFile = new File(srcURL.toURI());
+        } catch (final URISyntaxException e) {
+          throw new CompilerError(GenericErrors.INTERNAL_ERROR, e);
+        }
+      }
+
+      // Compilation commands
+      final CompilerCommand gccCommand = compilationCommandFactory
+          .newCompilerCommand(definition, src, srcFile, true, null, null,
+              objectFile, context);
+
+      gccCommand.setAllDependenciesManaged(true);
+
+      compilationTasks.add(gccCommand);
+    }
 
   }
 
@@ -72,7 +132,7 @@ public class CppDefinitionCompiler extends BasicDefinitionCompiler {
       final Collection<CompilationCommand> compilationTasks,
       final Map<Object, Object> context) throws ADLException {
 
-    // TODO
+    // TODO: We do not use any membrane yet in Mind C++
 
   }
 }
