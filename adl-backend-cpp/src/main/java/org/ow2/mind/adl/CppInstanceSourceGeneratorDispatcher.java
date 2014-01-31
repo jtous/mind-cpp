@@ -32,7 +32,7 @@ import org.ow2.mind.plugin.PluginManager;
 import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
 
-public class BasicInstanceSourceGeneratorDispatcher
+public class CppInstanceSourceGeneratorDispatcher
     extends
       AbstractVoidVisitorDispatcher<InstancesDescriptor>
     implements

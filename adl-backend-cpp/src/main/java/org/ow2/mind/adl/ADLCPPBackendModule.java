@@ -158,14 +158,14 @@ public class ADLCPPBackendModule extends AbstractMindModule {
 
   protected void configureInstanceSourceGenerator() {
     bind(InstanceSourceGenerator.class).to(
-        InstanceSourceGeneratorDispatcher.class);
+        CppInstanceSourceGeneratorDispatcher.class);
 
     final Multibinder<InstanceSourceGenerator> setBinder = ADLCPPBackendModule
         .getInstanceSourceGeneratorMultiBinder(binder());
     setBinder.addBinding().to(CppInstanceSourceGenerator.class);
   }
 
-  protected void configureBasicInstanceSourceGenerator() {
+  protected void configureCppInstanceSourceGenerator() {
     bind(String.class).annotatedWith(
         Names.named(CppInstanceSourceGenerator.TEMPLATE_NAME)).toInstance(
         CppInstanceSourceGenerator.DEFAULT_TEMPLATE);
