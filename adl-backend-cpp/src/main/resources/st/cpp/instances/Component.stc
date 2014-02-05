@@ -9,21 +9,32 @@ isClient ::= [ "client" : "true" ]
 isServer ::= [ "server" : "true" ]
 
 ComponentInstances(topLevelDefinition, definition, instances) ::= <<
-
 /* Generated file: <topLevelDefinition;format="nameToPath">_<definition.name;format="toCName">_instances.cpp */
 
-/* TODO */
+#include "<definition.name;format="nameToPath">.adl.hpp"
+#include "<topLevelDefinition.name;format="nameToPath">.adl.hpp"
 
-//#include "<definition.name;format="nameToPath">.hppinc"
+using namespace __ns_<topLevelDefinition.name;format="toCName">;
+
+/* Need topLevel for initialization of the singleton reference */
+extern <topLevelDefinition.name; format="toCName">Definition __component_toplevel;
+
+/* ComponentInstances */
+<if (definition.astDecorations.("is-singleton"))>
+<definition.name;format="toCName">Definition* <definition.name;format="toCName">Singleton = &(__component_toplevel<first(instances).decorations.("nameInParent")>);
+<endif>
 
 >>
 
 TopLevelInstances(topLevelDefinition, definitions, instances) ::= <<
-<ComponentInstances(topLevelDefinition=topLevelDefinition, definition=topLevelDefinition, instances=instances)>
+/* Generated file: <topLevelDefinition;format="nameToPath">_<definition.name;format="toCName">_instances.cpp */
 
-/* TODO */
+#include "<topLevelDefinition.name;format="nameToPath">.adl.hpp"
 
-//void *__component_toplevel = &<first(instances).decorations.("instance-name"); format="toCName">;
+using namespace __ns_<topLevelDefinition.name;format="toCName">;
+
+/* TopLevelInstance(s) */
+<topLevelDefinition.name; format="toCName">Definition __component_toplevel;
 
 >>
 
