@@ -6,7 +6,7 @@
 
     <artifactId>adl-backend-cpp</artifactId>
 	<groupId>org.ow2.mind</groupId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1.0-NMF-Style-SNAPSHOT</version>
 
 	<developers>
 		<developer>
