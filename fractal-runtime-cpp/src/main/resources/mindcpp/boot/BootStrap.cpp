@@ -24,8 +24,6 @@
 
 #include "mindcpp/boot/BootStrap.adl.hpp"
 
-using namespace __ns_mindcpp_boot_BootStrap;
-
 //from c code possible for singletons only
 //Might find a better way ???
 extern mindcpp_boot_BootStrapDefinition& mindcpp_boot_BootStrapSingleton;
