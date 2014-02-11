@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <name>mind-cpp multimodule project</name>
+    <description>Perform the build of the c++-related submodules (including the integration module mindcpp) </description>
+    <packaging>pom</packaging>
+    <artifactId>mind-cpp</artifactId>
+	<groupId>org.ow2.mind</groupId>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<developers>
+		<developer>
+			<id>jtous</id>
+			<name>Julien Tous</name>
+			<email>julien.tous@orange.com</email>
+			<organization>Orange</organization>
+		</developer>
+	</developers>
+
+	<contributors>
+    </contributors>
+
+    <modules>
+	<module>adl-backend-cpp</module>
+        <module>fractal-runtime-cpp</module>
+        <module>idl-backend-cpp</module>
+        <module>mindcpp</module>
+    </modules>
+
+</project>
