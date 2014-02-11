@@ -40,25 +40,14 @@ ComponentDefinitionHeader(definition) ::= <<
 
 
 namespace __ns_<definition.name;format="toCName"> {
-
-/* Start internal data definition: private component data + client interfaces references */
-<InternalDataDecl(definition=definition)>
-/* Stop internal data definition: private component data + client interfaces references */
-
-
-<if (definition.interfaces)>
-<if (definition.astDecorations.("serverItfInstances"))>
-/* Start definition of interface instances classes */
-<InterfaceInstancesClassDef(definition=definition)>
-/* End definition of interface instances classes */
-<endif>
-<endif>
-
-
+	
 /* Start definition of component type */
 <DefinitionClassDef(definition=definition)>
 /* End  definition of component type */
 
+/* Start of typedef aliases for user code */
+<TypeDef(definition=definition)>
+/* End of typedef aliases for user code */
 };
 
 #endif /* __COMPONENT_<definition.name;format="toUpperCName">_ADL_HPP */
@@ -73,26 +62,64 @@ namespace __ns_<definition.name;format="toCName"> {
 // Component typedef
 
 DefinitionClassDef(definition) ::= <<
-class <definition.name;format="toCName">Definition <FullInheritanceDecl(definition=definition)> {
-<if (!(definition.astNodeTypes.("component")))> <! constructor and destructor for primitives !>
-public:
-  // constructor and destructor
-  inline <definition.name;format="toCName">Definition(){};
-  inline ~<definition.name;format="toCName">Definition(){};
-<endif>
+class <definition.name;format="toCName">Definition {
 
-<if (definition.astNodeTypes.("component"))>
+	<if (definition.astNodeTypes.("component"))>
+	<if (definition.components)>
+	public:
+	// sub-components
+	<SubComponentsDecl(definition=definition)>
+	<ContructorDeclInitBindings(definition=definition)>
+	<endif>
+	<else>
+  
+	<if (definition.interfaces)>
+	<if (definition.astDecorations.("serverItfInstances"))>
+	/* Start predeclaration of srv interface instances classes */
 public:
-  // sub-components
-  <SubComponentsDecl(definition=definition)>
-
+	<definition.interfaces:{class <it.name>Class; }; separator="\n">
+	/* End definition of srv interface instances classes */
+	<endif>
+	<endif>
+	
+private:
+	<if (definition.interfaces)>
+	<if (definition.astDecorations.("serverItfInstances"))>
+	/* Start friendness for srv interface instances classes */
+	<definition.interfaces:{friend <it.name;format="toCName">Class; }; separator="\n">
+	/* End friendness for srv interface instances classes */
+	<endif>
+	<endif>
+	//data
+	struct internal_data {
+		//FIXME put internal data here
+	};
+	internal_data PRIVATE;
 public:
-  // bindings initialization between sub-components
-  <ContructorDeclInitBindings(definition=definition)>
+	<if (definition.interfaces)>
+	<if (definition.astDecorations.("serverItfInstances"))>
+	<ServerInstancesClassDef(definition=definition)>
+	<endif>
+	<endif>
+	<ClientItfDecl(definition)>;
+	<if (definition.interfaces)>
+	<if (definition.astDecorations.("serverItfInstances"))>
+	<ServerInstancesClassDecl(definition=definition)>
+	<endif>
+	<endif>
 
-<endif>
+	<endif> 
 };
 >>
+
+TypeDef(definition) ::= <<
+<if (definition.interfaces)>
+<if (definition.astDecorations.("serverItfInstances"))>
+<definition.astDecorations.("serverItfInstances"):{typedef <definition.name;format="toCName">Definition::<it.name; format="toCName">Class <it.name>}; separator=";\n">;
+<endif>
+<endif>
+>>
+
 
 //  -----------------------------------------------------------------------------
 // Full inheritance
@@ -101,21 +128,12 @@ FullInheritanceDecl(definition) ::= <<
 : <ProvidedInterfacesInheritance(definition=definition)> virtual public internal_data
 >>
 
-// -----------------------------------------------------------------------------
-// Internal data (private data + client interfaces references)
-
-InternalDataDecl(definition) ::= <<
-class internal_data {
-public:
-  inline internal_data(){};
-  virtual inline ~internal_data(){};
+// + client interfaces references
+ClientItfDecl(definition) ::= <<
 <if (definition.astDecorations.("clientItfInstances"))>
-
   // client interface references 
   <definition.astDecorations.("clientItfInstances"):{<InterfaceReferencesDecl(itf=it)>}; separator="\n"> <! DeclareClientReferences will filter server interfaces !>
 <endif>
-
-};
 >>
 
 // -----------------------------------------------------------------------------
@@ -129,22 +147,62 @@ ProvidedInterfaceInheritance(itf) ::= <<
 public <it.name; format="toCName"><endif>
 >>
 
-InterfaceInstancesClassDef(definition) ::= <<
-<definition.interfaces:{<InterfaceInstanceClassDef(itf=it)>}; separator="\n">
+ServerInstancesClassDef(definition) ::= <<
+<definition.interfaces:{<ServerInstanceClassDef(itf=it,definition=definition)>}; separator="\n">
 >>
 
-InterfaceInstanceClassDef(itf) ::= <<
-<if (isServer.(itf.role))>
-class <itf.name; format="toCName"> : public virtual <itf.signature; format="toCName">Descriptor, virtual public internal_data {
-// constructor and destructor
-public:
-  inline <itf.name; format="toCName">(){};
-  inline ~<itf.name; format="toCName">(){};
+ServerInstancesClassDecl(definition) ::= <<
+<definition.interfaces:{<ServerInstanceClassDecl(itf=it,definition=definition)>}; separator="\n">
+>>
 
-// prototypes
-<methodsVirtualPrototypes(itfDef=itf.astDecorations.("interfaceDefinition"))>
+ServerInstanceClassDef(itf,definition) ::= <<
+<if (isServer.(itf.role))>
+class <itf.name; format="toCName">Class : public <itf.signature; format="toCName">Descriptor {
+public:
+	// prototypes
+	<methodsVirtualPrototypes(itfDef=itf.astDecorations.("interfaceDefinition"))>
+private:
+	friend <definition.name;format="toCName">Definition;
+	// constructor
+	  inline <itf.name; format="toCName">Class<constructorChain(definition)>
+	  <definition.astDecorations.("clientItfInstances"):{<ClientReferenceReference(itf=it)>}; separator=";\n">;
 };
 <endif>  
+>>
+
+
+ServerInstanceClassDecl(itf,definition) ::= <<
+<if (isServer.(itf.role))>
+<itf.name; format="toCName">Class <itf.name> = <itf.name; format="toCName">Class(<constructorChainCall(definition)>);
+<endif>  
+>>
+
+constructorChainCall(definition) ::= <<
+<if (definition.interfaces)>
+<if (definition.astDecorations.("clientItfInstances"))>
+<definition.astDecorations.("clientItfInstances"):{<it.name>}; separator=",">
+<endif>  
+<endif>  
+>>
+
+constructorChain(definition) ::= <<
+<if (definition.interfaces)>
+<if (definition.astDecorations.("clientItfInstances"))>
+(<definition.astDecorations.("clientItfInstances"):{<it.signature; format="toCName">Reference & <it.name; format="toCName">Ref}; separator=",">):<definition.astDecorations.("clientItfInstances"):{<InterfaceReferenceReferenceConstructLink(itf=it)>}; separator=",">{};
+<else>
+(){};
+<endif> 
+<else>
+(){};
+<endif>  
+>>
+
+ClientReferenceReference(itf) ::= <<
+	<itf.signature; format="toCName">Reference & <itf.name; format="toCName">
+>>
+
+InterfaceReferenceReferenceConstructLink(itf) ::= <<
+	<itf.name; format="toCName">(<itf.name; format="toCName">Ref)
 >>
 
 methodsVirtualPrototypes(itfDef) ::= <<
@@ -188,7 +246,7 @@ ContructorDeclInitBindings(definition) ::= <<
 >>
 
 DeclareBindingDefaultInit(binding) ::= <<
-<binding.fromComponent>.<binding.fromInterface>.reference=&<binding.toComponent>;
+<binding.fromComponent>.<binding.fromInterface>.reference=&(<binding.toComponent>.<binding.toInterface>);
 >>
 
 // -----------------------------------------------------------------------------
