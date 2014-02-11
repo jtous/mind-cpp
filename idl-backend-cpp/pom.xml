@@ -6,7 +6,7 @@
   
   <groupId>org.ow2.mind</groupId>
   <artifactId>idl-backend-cpp</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.1.0-NMF-Style-SNAPSHOT</version>
   
   <dependencies>
         <dependency>
@@ -19,7 +19,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>adl-backend-cpp</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.1.0-NMF-Style-SNAPSHOT</version>
         </dependency>
 
         <dependency>

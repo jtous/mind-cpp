@@ -24,11 +24,7 @@
 
 #include "mindcpp/boot/BootStrap.adl.hpp"
 
-using namespace __ns_mindcpp_boot_BootStrap;
-
-//from c code possible for singletons only
-//Might find a better way ???
-extern mindcpp_boot_BootStrapDefinition& mindcpp_boot_BootStrapSingleton;
+extern mindcpp_boot_BootStrap& mindcpp_boot_BootStrapSingleton;
 
 int main(int argc, char *argv[]) {
 	int r;

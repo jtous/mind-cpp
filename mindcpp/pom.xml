@@ -6,23 +6,23 @@
   
   <groupId>org.ow2.mind</groupId>
   <artifactId>mindcpp</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.1.0-NMF-Style-SNAPSHOT</version>
   
   <dependencies>
   	<dependency>
   		<groupId>${project.groupId}</groupId>
   		<artifactId>adl-backend-cpp</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
+  		<version>0.1.0-NMF-Style-SNAPSHOT</version>
   	</dependency>
   	<dependency>
   		<groupId>${project.groupId}</groupId>
   		<artifactId>fractal-runtime-cpp</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
+  		<version>0.1.0-NMF-Style-SNAPSHOT</version>
   	</dependency>
   	<dependency>
   		<groupId>${project.groupId}</groupId>
   		<artifactId>idl-backend-cpp</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
+  		<version>0.1.0-NMF-Style-SNAPSHOT</version>
   	</dependency>
 
   </dependencies> 

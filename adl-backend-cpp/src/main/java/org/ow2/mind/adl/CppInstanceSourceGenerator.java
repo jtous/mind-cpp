@@ -167,8 +167,9 @@ public class CppInstanceSourceGenerator extends AbstractSourceGenerator
         // concatenate the new name
         if (previousNameInParent == null) previousNameInParent = "";
 
+        /* _mind_ prefix at every level to avoid name clashes */
         instance.setDecoration("nameInParent", previousNameInParent + "."
-            + instance.getNameInParent(parents[0]));
+            + "_mind_" + instance.getNameInParent(parents[0]));
 
       } else if (parents.length > 1)
         // TODO: change with error log to throw a fatal exception
